@@ -3,6 +3,7 @@ package com.example.shop.service;
 import com.example.shop.dao.ProductDao;
 import com.example.shop.entity.enums.Category;
 import com.example.shop.entity.products.Product;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -81,6 +82,12 @@ public class ProductService {
                 pageable
         );
     }
+
+    public List<Product> findRandomProductList(Integer id){
+
+      return productDao.findRandomRecommendations(id);
+    }
+
     public Page<Product> getSearchProducts(int page,String search){
 
 

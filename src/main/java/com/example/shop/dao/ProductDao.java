@@ -54,4 +54,10 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
             @Param("search") String search,
             Pageable pageable
     );
-}
+
+    @Query(
+            value = "SELECT * FROM products WHERE id != :currentProductId ORDER BY RANDOM() LIMIT 4",
+            nativeQuery = true
+    )List<Product> findRandomRecommendations(
+            @Param("currentProductId") Integer currentProductId
+    );}

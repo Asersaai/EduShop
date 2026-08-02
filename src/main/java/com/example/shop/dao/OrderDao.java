@@ -1,7 +1,7 @@
 package com.example.shop.dao;
 
-import com.example.shop.entity.order.Order;
 import com.example.shop.entity.account.User;
+import com.example.shop.entity.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

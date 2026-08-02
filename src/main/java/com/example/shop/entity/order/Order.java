@@ -2,6 +2,7 @@ package com.example.shop.entity.order;
 
 import com.example.shop.entity.account.User;
 import com.example.shop.entity.enums.OrderStatus;
+import com.example.shop.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,9 @@ public class Order {
     @Column(length = 400)
     private String shippingAddress;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
     @OneToMany( mappedBy = "order",
             cascade = CascadeType.ALL,

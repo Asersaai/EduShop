@@ -56,11 +56,13 @@ public class ProductController {
     }
 
 
+
     @GetMapping("/product/details/{id}")
     public  String productDetails(@PathVariable Integer id, Model model, HttpServletRequest request)
     {
-        Product product=productService.findProductById(id).get();
-        model.addAttribute("product",product);
+
+        model.addAttribute("product",productService.findProductById(id).get());
+        model.addAttribute("products", productService.findRandomProductList(id));
         model.addAttribute("reviews", reviewService.getReviewsForProduct(id));
 
         boolean userHasRated = false;

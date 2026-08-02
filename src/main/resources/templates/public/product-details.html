@@ -58,27 +58,18 @@
                         th:text="${i <= rounded} ? '&#9733;' : '&#9734;'">&#9733;</th:block>
             </span>
             <span class="text-muted"
-                  th:text="${product.ratingsCount} + ' ' + (${product.ratingsCount == 1} ? 'rating' : 'ratings')">128 reviews</span>
+                  th:text="${product.ratingsCount} + ' ' + (${product.ratingsCount == 1} ? 'rating' : 'ratings')">78ujjhg reviews</span>
             <span class="badge badge-success">In stock</span>
           </div>
 
           <div class="pd-price">
-            <span class="price" th:text="'$' + (${product.price} ?: '100.00')">$59.00</span>
+            <span class="price" th:text="'$' + (${product.price} ?: '100.00')">.00</span>
           </div>
 
           <p class="pd-desc" th:text="${product.description} ?: 'coming soon'">
           </p>
 
-          <div class="pd-options">
-            <div class="form-group">
-              <label class="form-label">Color</label>
-              <select class="form-control">
-                <option>Charcoal Black</option>
-                <option>Slate Blue</option>
-                <option>Sand</option>
-              </select>
-            </div>
-          </div>
+          
 
           <div class="pd-actions">
             <div class="qty-stepper">
@@ -102,7 +93,7 @@
       <div class="tab-row">
         <span class="tab active">Description</span>
         <span class="tab">Specifications</span>
-        <span class="tab" th:text="'Reviews (' + ${#lists.size(reviews)} + ')'">Reviews (128)</span>
+        <span class="tab" th:text="'Reviews (' + ${#lists.size(reviews)} + ')'">Reviews</span>
       </div>
 
       <div>
@@ -129,7 +120,6 @@
           No comments yet &mdash; be the first to leave one.
         </p>
 
-        <!-- ================= LEAVE A COMMENT ================= -->
         <div style="max-width: 480px; margin-top: var(--space-5);">
 
           <form th:if="${currentUser != null}"
@@ -172,64 +162,18 @@
         </div>
       </div>
 
-      <!-- ================= RECOMMENDATIONS ================= -->
       <div class="section-head" style="margin-top: var(--space-8);">
         <div>
           <span class="eyebrow">You may also like</span>
           <h2>Recommended for you</h2>
         </div>
       </div>
-
-      <!--
-        Dynamic version once `recommended` is supplied by the controller:
-        <div class="product-grid">
-          <div th:each="product : ${recommended}"
-               th:replace="~{fragments/product-card :: product-card(product=${product})}"></div>
-        </div>
-      -->
       <div class="product-grid">
-        <div class="product-card">
-          <div class="thumb">&#128187;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
-          <div class="body">
-            <div class="category">Computers</div>
-            <div class="title">Slim Laptop 14&Prime;</div>
-            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="count">(94)</span></div>
-            <div class="price-row"><span class="price">$899.00</span>
-              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="thumb">&#9000;&#65039;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
-          <div class="body">
-            <div class="category">Wearables</div>
-            <div class="title">Smart Watch SE</div>
-            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;<span class="count">(61)</span></div>
-            <div class="price-row"><span class="price">$129.00</span>
-              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="thumb">&#127825;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
-          <div class="body">
-            <div class="category">Lifestyle</div>
-            <div class="title">Insulated Bottle</div>
-            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;<span class="count">(133)</span></div>
-            <div class="price-row"><span class="price">$19.00</span>
-              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="thumb">&#128221;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
-          <div class="body">
-            <div class="category">Stationery</div>
-            <div class="title">Notebook Set (5pk)</div>
-            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="count">(40)</span></div>
-            <div class="price-row"><span class="price">$12.00</span>
-              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
-          </div>
-        </div>
+        <th:block th:each="product : ${products}">
+          <div th:replace="~{fragments/product-card :: product-card(product=${product})}"></div>
+        </th:block>
       </div>
-    </div>
+        </div>
   </section>
 
   <div th:replace="~{fragments/layout :: footer}"></div>
