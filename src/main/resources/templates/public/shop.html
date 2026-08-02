@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Shop')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Shop</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='shop')}"></div>
+
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <a th:href="@{/templates/public}" href="home.html">Home</a><span class="sep">/</span><span>Shop</span>
+    </div>
+  </div>
+
+  <section style="padding-top: var(--space-4);">
+    <div class="container">
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Catalog</span>
+          <h2>All Products</h2>
+        </div>
+      </div>
+
+      <div class="shop-layout">
+
+          <form th:action="@{/shop}" method="get">
+          <input type="hidden" name="sort" th:value="${sort}">
+          <aside class="filter-panel">
+          <h3>Filters</h3>
+          <h5>Category</h5>
+          <div class="filter-group" th:each="c : ${categories}">
+              <input type="checkbox"
+                     name="category"
+                     th:value="${c.name()}"
+                     th:checked="${selectedCategories != null && selectedCategories.contains(c)}">
+              <span th:text="${c.icon + ' ' + c.displayName}"></span>
+            </div>
+
+              <div class="filter-group">
+                  <h4>Price</h4>
+
+                  <input
+                          class="form-control"
+                          type="number"
+                          name="minPrice"
+                          placeholder="From"
+                          th:value="${minPrice}">
+
+                  <input
+                          class="form-control"
+                          type="number"
+                          name="maxPrice"
+                          placeholder="To"
+                          th:value="${maxPrice}">
+              </div>
+
+
+              <button class="btn btn-primary btn-block">
+                  Apply Filters
+              </button>
+
+              <a th:href="@{/shop}" class="btn btn-secondary btn-block">
+                  Reset
+              </a>
+          </aside>
+          </form>
+
+        <div>
+          <div class="toolbar-row">
+           <span class="result-count" th:if="${products.totalElements > 0}">
+    Showing
+    <span th:text="${products.number * products.size + 1}"></span>
+    -
+    <span th:text="${products.number * products.size + products.numberOfElements}"></span>
+    of
+    <span th:text="${products.totalElements}"></span>
+    results
+</span>
+
+            <span class="result-count" th:unless="${products.totalElements > 0}">
+    No products found
+</span>
+            <form th:action="@{/shop}" method="get" class="sort-select">
+              <input type="hidden" name="minPrice" th:value="${minPrice}">
+              <input type="hidden" name="maxPrice" th:value="${maxPrice}">
+              <input type="hidden" name="search" th:value="${search}">
+              <input type="hidden" th:each="c : ${selectedCategories}" name="category" th:value="${c.name()}">
+              Sort by:
+              <select name="sort" class="form-control" style="width:auto; padding:8px 14px;"
+                      onchange="this.form.submit()">
+                <option value="popular" th:selected="${sort == 'popular'}">Most popular</option>
+                <option value="price_asc" th:selected="${sort == 'price_asc'}">Price: low to high</option>
+                <option value="price_desc" th:selected="${sort == 'price_desc'}">Price: high to low</option>
+                <option value="newest" th:selected="${sort == 'newest'}">Newest</option>
+              </select>
+            </form>
+          </div>
+
+
+          <div class="product-grid">
+            <th:block th:each="product : ${products.content}">
+              <div th:replace="~{fragments/product-card :: product-card(product=${product})}"></div>
+            </th:block>
+          </div>
+
+          <div class="table-footer" style="margin-top: var(--space-5); border-top:none;"><span>
+    Page <span th:text="${products.number + 1}"></span>
+    of
+    <span th:text="${products.totalPages}"></span>
+</span>
+            <div class="pagination">
+
+              <a th:if="${products.hasPrevious()}"
+                 th:href="@{/shop(page=${products.number - 1}, sort=${sort}, minPrice=${minPrice}, maxPrice=${maxPrice}, search=${search}, category=${selectedCategories})}">
+                ‹
+              </a>
+
+              <th:block th:if="${products.totalPages > 0}">
+                <a th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+                   th:href="@{/shop(page=${i}, sort=${sort}, minPrice=${minPrice}, maxPrice=${maxPrice}, search=${search}, category=${selectedCategories})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == products.number} ? 'active'">
+                </a>
+              </th:block>
+
+              <a th:if="${products.hasNext()}"
+                 th:href="@{/shop(page=${products.number + 1}, sort=${sort}, minPrice=${minPrice}, maxPrice=${maxPrice}, search=${search}, category=${selectedCategories})}">
+                ›
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+</body>
+</html>

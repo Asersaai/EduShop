@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Manage Users')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Manage Users</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body class="admin-body">
+
+   <div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='users')}"></div>
+
+  <div class="admin-main">
+
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;">Users</h2>
+          <div class="breadcrumb">Admin / Users</div>
+        </div>
+        <a th:href="@{/admin/users/new}"  class="btn btn-primary btn-sm">&#43; Add User</a>
+      </div>
+
+      <div th:if="${param.success}" th:replace="~{fragments/alerts :: alert(type='success', title='Done', message='User saved successfully.')}"></div>
+      <div th:if="${param.error}" th:with="errMsg=${param.error[0]}">
+        <div th:replace="~{fragments/alerts :: alert(type='error', title='Error', message=${errMsg})}"></div>
+      </div>
+
+      <div class="table-wrap">
+
+        <div class="table-toolbar" style="padding: var(--space-5) 18px 0;">
+          <form th:action="@{/admin/users}" method="get">
+          <div class="search-box"><span>&#128269;</span><input type="text" name="search" placeholder="Search by username or email…" th:value="${search}" /></div></form>
+        </div>
+
+
+
+        <table class="data-table" style="margin-top: var(--space-4);">
+          <thead>
+            <tr><th>Username</th><th>Email</th><th>Role</th><th>Balance</th><th>Top up</th><th></th></tr>
+          </thead>
+          <tbody>
+          <tr th:each="u : ${users}">
+            <td>
+              <div class="cell-user">
+                <img th:if="${u.image}" th:src="${u.image}" class="avatar-sm avatar-sm-img" alt="" />
+                <div th:unless="${u.image}" class="avatar-sm"
+                     th:text="${#strings.substring(u.userName,0,1).toUpperCase()}">
+                  U
+                </div>
+                <span th:text="${u.userName}">username</span>
+              </div>
+            </td>
+
+            <td th:text="${u.email}">email@example.com</td>
+
+            <td>
+        <span class="badge"
+              th:text="${u.role}">
+            Student
+        </span>
+            </td>
+
+            <td>
+              <span class="balance-pill" style="font-size:0.78rem;"
+                    th:text="'$' + ${#numbers.formatDecimal(u.balance, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+            </td>
+
+            <td>
+              <form th:action="@{/admin/users/topup/{id}(id=${u.id})}" method="post"
+                    style="display:flex; gap:6px; align-items:center;">
+                <input type="number" name="amount" min="1" step="0.01" placeholder="50"
+                       class="form-control" style="width:90px; padding:6px 8px;" required />
+                <button class="btn btn-primary btn-sm" type="submit">+ Add</button>
+              </form>
+            </td>
+
+            <td>
+              <div class="table-actions" th:if="${u.role != u.role.ADMIN}">
+                <a th:href="@{/admin/users/edit/{id}(id=${u.id})}" class="btn-icon" aria-label="Edit">&#9998;</a>
+                <form th:action="@{/admin/users/delete/{id}(id=${u.id})}" method="post">
+                  <button class="btn-icon danger" aria-label="Delete">&#128465;</button>
+                </form>
+              </div>
+            </td>
+
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span class="result-count" th:if="${users.totalElements > 0}">
+    Showing
+    <span th:text="${users.number * users.size + 1}"></span>
+    -
+    <span th:text="${users.number * users.size + users.numberOfElements}"></span>
+    of
+    <span th:text="${users.totalElements}"></span>
+    results
+</span>
+
+          <span class="result-count" th:unless="${users.totalElements > 0}">
+    No users found
+</span>
+          <div class="pagination">
+            <a th:if="${users.hasPrevious()}" th:href="@{/admin/users(page=${users.number - 1})}"> ‹ </a>
+            <th:block th:if="${users.totalPages > 0}">
+              <a th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}" th:href="@{/admin/users(page=${i})}" th:text="${i + 1}" th:classappend="${i == users.number} ? 'active'"> </a>
+            </th:block> <a th:if="${users.hasNext()}" th:href="@{/admin/users(page=${users.number + 1})}"> › </a>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

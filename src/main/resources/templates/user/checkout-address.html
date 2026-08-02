@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Shipping Address')}">
+  <meta charset="UTF-8" /><title>EduShop · Shipping Address</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='')}"></div>
+
+  <section style="padding-top:var(--space-4);">
+    <div class="container" style="max-width:640px;">
+
+      <div class="step-bar">
+        <div class="step done"><span class="step-num">&#10003;</span><span>Cart</span></div>
+        <div class="step active"><span class="step-num">2</span><span>Address</span></div>
+        <div class="step"><span class="step-num">3</span><span>Payment</span></div>
+        <div class="step"><span class="step-num">4</span><span>Confirm</span></div>
+      </div>
+
+      <div th:if="${param.error}" th:replace="~{fragments/alerts :: alert(type='error', title='Заполните адрес', message='Укажите адрес доставки, чтобы продолжить.')}"></div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Shipping Address</h3></div>
+
+        <form th:action="@{/checkout/address}" action="#" method="post">
+          <div class="form-group">
+            <label class="form-label" for="fullName">Recipient</label>
+            <input class="form-control" type="text" id="fullName" th:value="${user.getUserName()}" disabled />
+            <p class="hint">Delivered to the account holder — change your name in Settings if needed.</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="address">Delivery address</label>
+            <textarea class="form-control" id="address" name="address" rows="4"
+                      placeholder="Street, house/apartment number, city, postal code, country"
+                      th:text="${user.getAddress()}" required></textarea>
+          </div>
+
+          <div style="margin-top:var(--space-5); display:flex; gap:var(--space-3);">
+            <a th:href="@{/cart}" href="cart.html" class="btn btn-ghost">&#8592; Back to Cart</a>
+            <button class="btn btn-primary" type="submit" style="flex:1;">Continue to Payment &rsaquo;</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

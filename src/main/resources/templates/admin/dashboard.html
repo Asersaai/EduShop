@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Admin Dashboard')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Admin Dashboard</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body class="admin-body">
+
+<div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='dashboard')}"></div>
+
+  <div class="admin-main">
+
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;">Dashboard</h2>
+          <div class="breadcrumb">Welcome back, here&rsquo;s what&rsquo;s happening today.</div>
+        </div>
+        <a href="#" class="btn btn-primary btn-sm">Generate Report</a>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value" th:text="${stats.getUserCount()} ?: '0'">000-q</div>
+
+          </div>
+          <div class="stat-icon purple">&#128101;</div>
+        </div>
+        <div class="stat-card">
+          <div>
+            <div class="stat-label">Total Products</div>
+            <div class="stat-value" th:text="${stats.getProductCount()} ?: '0'">000</div>
+
+          </div>
+          <div class="stat-icon blue">&#128230;</div>
+        </div>
+        <div class="stat-card">
+          <div>
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value" th:text="${stats.getOrderCount()} ?: '0'">0qa00</div>
+
+          </div>
+          <div class="stat-icon pink">&#128722;</div>
+        </div>
+        <div class="stat-card">
+          <div>
+            <div class="stat-label">Revenue</div>
+            <div class="stat-value" th:text="${stats.getRevenue()} ?: '0'">0a00</div>
+
+          </div>
+          <div class="stat-icon green">&#128176;</div>
+        </div>
+      </div>
+
+
+<!--      <div class="dash-grid">-->
+<!--        <div class="panel">-->
+<!--          <div class="panel-head">-->
+<!--            <h3>Sales Overview</h3>-->
+
+<!--          </div>-->
+
+<!--        <div class="panel">-->
+<!--          <div class="panel-head"><h3>Orders by Category</h3></div>-->
+<!--          <div class="donut-placeholder"></div>-->
+<!--          <div class="legend-row"><span><span class="dot" style="background:var(&#45;&#45;color-primary);"></span>Electronics</span><span>45%</span></div>-->
+<!--          <div class="legend-row"><span><span class="dot" style="background:var(&#45;&#45;color-accent);"></span>Books</span><span>25%</span></div>-->
+<!--          <div class="legend-row"><span><span class="dot" style="background:#FFD166;"></span>Stationery</span><span>18%</span></div>-->
+<!--          <div class="legend-row"><span><span class="dot" style="background:var(&#45;&#45;color-border);"></span>Other</span><span>12%</span></div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Recent Orders</h3>
+          <a th:href="@{/admin/orders}" href="orders.html" class="form-link">View all</a>
+        </div>
+        <div class="table-wrap" style="border:none;">
+          <table class="data-table">
+            <thead>
+              <tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${orders}" th:attr="data-status=${o.status.name()}">
+              <td th:text="'#EDU-' + ${o.id}">#EDU-1042</td>
+              <td>
+                <div class="cell-user">
+                  <img th:if="${o.user.image}" th:src="${o.user.image}" class="avatar-sm avatar-sm-img" alt="" />
+                  <div th:unless="${o.user.image}" class="avatar-sm"
+                       th:text="${#strings.substring(o.user.userName,0,1).toUpperCase()}">U</div>
+                  <span th:text="${o.user.userName}">Jane Doe</span>
+                </div>
+              </td>
+              <td th:text="${#temporals.format(o.createdAt, 'MMM dd, yyyy')}">Jun 12, 2026</td>
+              <td>
+                <span class="badge badge-success" th:if="${o.status.name() == 'DELIVERED'}">Delivered</span>
+                <span class="badge badge-warning" th:if="${o.status.name() == 'SHIPPED'}">Shipped</span>
+                <span class="badge badge-info" th:if="${o.status.name() == 'PROCESSING'}">Processing</span>
+                <span class="badge badge-danger" th:if="${o.status.name() == 'CANCELLED'}">Cancelled</span>
+              </td>
+              <td th:text="'$' + ${#numbers.formatDecimal(o.totalPrice, 1, 'COMMA', 2, 'POINT')}">$93.00</td>
+              <td>
+                <form th:action="@{/admin/orders/status/{id}(id=${o.id})}" method="post" class="status-change-form" style="display:flex;gap:6px;">
+
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

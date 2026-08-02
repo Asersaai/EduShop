@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Order History')}">
+  <meta charset="UTF-8" /><title>EduShop · Order History</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+  <div th:replace="~{fragments/navbar :: navbar(active='profile')}"></div>
+
+  <section style="padding-top: var(--space-4);">
+    <div class="container">
+      <div class="section-head">
+        <div><span class="eyebrow">Account</span><h2>Order History</h2></div>
+      </div>
+
+      <div class="profile-layout">
+
+        <aside class="profile-card">
+          <h3 th:text="${user.getUserName()}">Alisher</h3>
+          <span class="role-tag" th:text="${user.getEmail()}">test</span>
+
+          <div class="profile-stats">
+            <div><strong th:text="${#lists.size(orders)}">0</strong><span>Orders</span></div>
+            <div><strong>&#8212;</strong><span>Wishlist</span></div>
+            <div><strong>&#8212;</strong><span>Reviews</span></div>
+          </div>
+
+          <nav class="profile-nav">
+            <a th:href="@{/account/profile}" href="profile.html"><span>&#128100;</span> Account details</a>
+            <a th:href="@{/account/orders}" href="order-history.html" class="active"><span>&#128230;</span> Order history</a>
+            <a th:href="@{/cart}" href="cart.html"><span>&#128722;</span> My Cart</a>
+            <a th:href="@{/settings}" href="settings.html"><span>&#9881;</span> Settings</a>
+          </nav>
+        </aside>
+
+        <div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>All Orders</h3>
+              <a th:href="@{/shop}" href="shop.html" class="form-link">Continue shopping</a>
+            </div>
+
+            <div class="order-history-toolbar" th:if="${not #lists.isEmpty(orders)}">
+              <div class="order-status-tabs" id="statusTabs">
+                <button type="button" class="active" data-status="all">All</button>
+                <button type="button" data-status="processing">Processing</button>
+                <button type="button" data-status="shipped">Shipped</button>
+                <button type="button" data-status="delivered">Delivered</button>
+                <button type="button" data-status="cancelled">Cancelled</button>
+              </div>
+              <div class="search-box" style="max-width:260px;">
+                <span>&#128269;</span>
+                <input type="text" id="orderSearch" placeholder="Search by order #…" />
+              </div>
+            </div>
+
+            <div class="table-wrap" style="border:none;" th:if="${not #lists.isEmpty(orders)}">
+              <table class="data-table" id="ordersTable">
+                <thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Status</th><th>Total</th><th></th></tr></thead>
+                <tbody>
+                  <tr th:each="o : ${orders}" th:attr="data-status=${#strings.toLowerCase(o.status.name())}">
+                    <td th:text="'#EDU-' + ${o.id}">#EDU-1</td>
+                    <td th:text="${#temporals.format(o.createdAt, 'MMM dd, yyyy')}">Jan 01, 2026</td>
+                    <td th:text="${#lists.size(o.items)} + ' items'">1 items</td>
+                    <td>
+                      <span class="badge badge-success" th:if="${o.status.name() == 'DELIVERED'}">Delivered</span>
+                      <span class="badge badge-warning" th:if="${o.status.name() == 'SHIPPED'}">Shipped</span>
+                      <span class="badge badge-info" th:if="${o.status.name() == 'PROCESSING'}">Processing</span>
+                      <span class="badge badge-danger" th:if="${o.status.name() == 'CANCELLED'}">Cancelled</span>
+                    </td>
+                    <td th:text="'$' + ${#numbers.formatDecimal(o.totalPrice, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
+                    <td><a th:href="@{/paymentConfirm(orderId=${o.id})}" class="form-link" style="font-size:.82rem;">View receipt</a></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="order-empty-state" id="emptyState" style="display:none;">
+                <div class="oe-icon">&#128230;</div>
+                <p style="margin:0;">No orders match this filter.</p>
+              </div>
+            </div>
+
+            <div class="order-empty-state" th:if="${#lists.isEmpty(orders)}">
+              <div class="oe-icon">&#128230;</div>
+              <p style="margin:0 0 var(--space-4);">You haven't placed any orders yet.</p>
+              <a th:href="@{/shop}" class="btn btn-primary btn-sm">Start shopping</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+  <script th:if="${not #lists.isEmpty(orders)}">
+    (function () {
+      const tabs = document.querySelectorAll('#statusTabs button');
+      const rows = document.querySelectorAll('#ordersTable tbody tr');
+      const searchInput = document.getElementById('orderSearch');
+      const emptyState = document.getElementById('emptyState');
+      let activeStatus = 'all';
+
+      function applyFilters() {
+        const query = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+
+        rows.forEach(row => {
+          const matchesStatus = activeStatus === 'all' || row.dataset.status === activeStatus;
+          const orderId = row.children[0].textContent.toLowerCase();
+          const matchesSearch = query === '' || orderId.includes(query);
+          const show = matchesStatus && matchesSearch;
+
+          row.classList.toggle('order-row-hidden', !show);
+          if (show) visible++;
+        });
+
+        emptyState.style.display = visible === 0 ? 'block' : 'none';
+      }
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeStatus = tab.dataset.status;
+          applyFilters();
+        });
+      });
+
+      searchInput.addEventListener('input', applyFilters);
+    })();
+  </script>
+</body>
+</html>

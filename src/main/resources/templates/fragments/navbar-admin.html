@@ -1,0 +1,82 @@
+<header class="navbar" th:fragment="navbar">
+
+    <div class="navbar__right">
+
+        <div class="balance-pill" title="Баланс счёта">
+            <span class="balance-pill__icon">&#128176;</span>
+            <span class="balance-pill__amount"
+                  th:text="'$' + ${#numbers.formatDecimal(currentUser.balance, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+        </div>
+
+
+        <div class="profile">
+
+            <button class="profile__button">
+
+                <img
+                        th:src="${currentUser.image} ?: @{/images/avatar-default.svg}"
+                        src="/images/avatar-default.svg"
+                        alt="Avatar"
+                        class="profile__avatar">
+
+                <span th:text="${currentUser.userName}">
+                    User
+                </span>
+
+            </button>
+
+            <div class="profile__menu">
+
+                <div class="profile__header">
+                    <strong th:text="${currentUser.userName}">
+                        Alisher
+                    </strong>
+
+                    <small th:text="${currentUser.email}">
+                        example@mail.com
+                    </small>
+                </div>
+
+                <a th:href="@{/account/profile}" class="profile-dropdown__item">
+                    <span>👤</span>
+                    <span>Profile</span>
+                </a>
+
+                <a th:href="@{/cart}" class="profile-dropdown__item">
+                    <span>🛒</span>
+                    <span>Cart</span>
+                </a>
+
+                <a th:href="@{/wishlist}" class="profile-dropdown__item">
+                    <span>❤️</span>
+                    <span>wishlist</span>
+                </a>
+
+                <a th:href="@{/account/topup}" class="profile-dropdown__item">
+                    <span>💰</span>
+                    <span>Пополнить счёт</span>
+                </a>
+
+                <a th:href="@{/settings}" class="profile-dropdown__item">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </a>
+
+                <a th:href="@{/home}" class="profile-dropdown__item">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </a>
+
+                <hr>
+
+                <a th:href="@{/logout}" class="logout">
+                    🚪 Logout
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>

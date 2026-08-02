@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Settings')}">
+  <meta charset="UTF-8" /><title>EduShop · Settings</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='')}"></div>
+
+  <section style="padding-top:var(--space-4);">
+    <div class="container">
+
+      <div class="section-head">
+        <div><span class="eyebrow">Account</span><h2>Settings</h2></div>
+      </div>
+
+
+      <div class="settings-layout">
+
+
+        <div>
+
+          <div class="panel settings-section" id="profile">
+            <div class="panel-head"><h3>Profile Information</h3></div>
+            <p class="section-desc">Update your personal details and public profile.</p>
+            <form th:action="@{/settings/update/profile}" action="#" method="post">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" >Username</label>
+                  <input class="form-control" type="text" value="" name="userName" th:value="${user.getUserName()} ?: 'Alish'"  />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input class="form-control" type="email" name="email" th:value="${user.getEmail()} ?: 'mail xz'" />
+                </div>
+              </div>
+              <button class="btn btn-primary" type="submit">Save Profile</button>
+            </form>
+          </div>
+          <div class="panel settings-section" id="security">
+            <div class="panel-head"><h3>Security</h3></div>
+            <p class="section-desc">Manage your password and two-factor authentication.</p>
+
+            <form th:action="@{/settings/update/password}" action="#" method="post">
+              <div class="form-group">
+                <label class="form-label">Current password</label>
+                <input class="form-control" type="password" placeholder="••••••••" style="max-width:380px;" name="oldPassword" />
+              </div>
+              <div class="form-grid-2" style="max-width:640px;">
+                <div class="form-group">
+                  <label class="form-label">New password</label>
+                  <input class="form-control" type="password" name="newPassword" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Confirm new password</label>
+                  <input class="form-control" type="password" name="confirmNewPassword" placeholder="••••••••" />
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" type="submit">Change Password</button>
+            </form>
+          </div>
+
+          <div class="danger-zone">
+            <form th:action="@{/settings/delete}"  action="#" method="post">
+            <h4>&#9888; Danger Zone</h4>
+            <p>Deleting your account is permanent. All your orders, wishlist and personal data will be erased and cannot be recovered.</p>
+            <button class="btn btn-sm" style="background:var(--color-danger);color:#fff;" type="submit">Delete My Account</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

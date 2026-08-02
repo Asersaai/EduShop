@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <div class="alert"
+       th:fragment="alert(type, title, message)"
+       th:classappend="${
+         type == 'success' ? 'alert-success' :
+         (type == 'error' ? 'alert-error' :
+         (type == 'warning' ? 'alert-warning' : 'alert-info'))
+       }">
+    <span class="alert-icon"
+          th:text="${
+            type == 'success' ? '✔' :
+            (type == 'error' ? '✕' :
+            (type == 'warning' ? '⚠' : 'ℹ'))
+          }">✔</span>
+    <div>
+      <strong th:if="${title}" th:text="${title}">Success</strong>
+      <span th:text="${message} ?: 'Your action was completed successfully.'">Your action was completed successfully.</span>
+    </div>
+  </div>
+
+</body>
+</html>

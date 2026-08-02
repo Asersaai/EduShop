@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head th:replace="~{fragments/layout :: head(title='My Profile')}">
+  <meta charset="UTF-8" /><title>EduShop · Profile</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+  <div th:replace="~{fragments/navbar :: navbar(active='profile')}"></div>
+
+  <section style="padding-top: var(--space-4);">
+    <div class="container">
+      <div class="section-head">
+        <div><span class="eyebrow">Account</span><h2>My Profile</h2></div>
+      </div>
+
+
+      <div class="profile-layout">
+
+
+        <aside class="profile-card">
+          <h3 th:text="${user.getUserName()} ?: 'Alisher'">Alisher</h3>
+          <span class="role-tag" th:text="${user.getEmail()} ?: 'test'">test</span>
+          <span class="badge badge-info" style="margin-top:6px;" th:if="${user.getRole() == user.role.ADMIN }" >Admin</span>
+          <span class="badge badge-info" style="margin-top:6px;" th:if="${user.getRole() == user.role.USER }" >User</span>
+
+          <div class="profile-stats">
+            <div><strong th:text="${statsUser.getOrders()}">asfwetrehttq4622w</strong><span>Orders</span></div>
+            <div><strong th:text="${statsUser.getWishlists()}">4354364647647745747</strong><span>Wishlist</span></div>
+            <div><strong th:text="${statsUser.getReviews()}">74374547457457</strong><span>Reviews</span></div>
+          </div>
+
+          <nav class="profile-nav">
+            <a href="#" class="active"><span>&#128100;</span> Account details</a>
+            <a th:href="@{/account/orders}" href="order-history.html"><span>&#128230;</span> Order history</a>
+            <a th:href="@{/cart}" href="cart.html"><span>&#128722;</span> My Cart</a>
+            <a th:href="@{/settings}" href="settings.html"><span>&#9881;</span> Settings</a>
+          </nav>
+        </aside>
+
+
+        <div>
+          <div class="panel" style="margin-bottom:var(--space-5);">
+            <div class="panel-head"><h3>Profile Photo</h3></div>
+            <form th:action="@{/account/profile/avatar}" action="#" method="post" enctype="multipart/form-data">
+              <div class="avatar-upload-row">
+                <img id="avatarPreview" class="avatar-preview"
+                     th:src="${user.getImage()} ?: '/images/avatar-default.svg'"
+                     src="/images/avatar-default.svg" alt="Avatar" />
+                <div>
+                  <label class="btn btn-ghost btn-sm" for="avatarInput" style="cursor:pointer;">Choose photo</label>
+                  <input type="file" id="avatarInput" name="avatar" accept="image/png,image/jpeg,image/webp"
+                         style="display:none;" data-cropper data-aspect-ratio="1" data-preview="#avatarPreview" />
+                  <button class="btn btn-primary btn-sm" type="submit" style="margin-left:8px;">Save Photo</button>
+                  <p class="hint">Square photo works best — crop it after selecting.</p>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel" style="margin-bottom:var(--space-5);">
+            <div class="panel-head"><h3>Account Details</h3></div>
+            <form th:action="@{/account/profile/update}" method="post">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Full name</label>
+                  <input class="form-control" type="text" name="name" th:value="${user.getUserName()}" />
+                </div>
+
+              </div>
+              <div class="form-group">
+                <label class="form-label">Shipping address</label>
+                <textarea class="form-control" th:text="${user.getAddress()}" name="address" rows="3"></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit">Save Changes</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Recent Orders</h3>
+              <a th:href="@{/account/orders}" href="order-history.html" class="form-link">View all orders</a>
+            </div>
+            <div class="table-wrap" style="border:none;">
+              <table class="data-table">
+                <thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Status</th><th>Total</th><th></th></tr></thead>
+                <tbody>
+                  <tr th:each="o : ${recentOrders}">
+                    <td th:text="'#EDU-' + ${o.id}">#EDU-</td>
+                    <td th:text="${#temporals.format(o.createdAt, 'MMM dd, yyyy')}">Jun 12, 2026</td>
+                    <td th:text="${#lists.size(o.items)} + ' items'">2 items</td>
+                    <td>
+                      <span class="badge badge-success" th:if="${o.status.name() == 'DELIVERED'}">Delivered</span>
+                      <span class="badge badge-warning" th:if="${o.status.name() == 'SHIPPED'}">Shipped</span>
+                      <span class="badge badge-info" th:if="${o.status.name() == 'PROCESSING'}">Processing</span>
+                      <span class="badge badge-danger" th:if="${o.status.name() == 'CANCELLED'}">Cancelled</span>
+                    </td>
+                    <td th:text="'$' + ${#numbers.formatDecimal(o.totalPrice, 1, 'COMMA', 2, 'POINT')}">0</td>
+                    <td><a th:href="@{/paymentConfirm(orderId=${o.id})}" class="form-link" style="font-size:.82rem;">View</a></td>
+                  </tr>
+                  <tr th:if="${#lists.isEmpty(recentOrders)}">
+                    <td colspan="6" class="text-center text-muted" style="padding:var(--space-5) 0;">No orders yet — <a th:href="@{/shop}" class="form-link">start shopping</a>.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script th:src="@{/js/image-cropper.js}" src="../static/js/image-cropper.js"></script>
+</body>
+</html>

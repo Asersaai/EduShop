@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Home')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Home</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='home')}"></div>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-copy">
+        <h1>Online Education<br />&amp; Shopping Platform</h1>
+        <p class="lead">One marketplace for course materials, study gear and everyday essentials &mdash; curated for learners, priced for students.</p>
+        <div class="hero-actions">
+          <a th:href="@{/shop}"  class="btn btn-primary">Start Shopping</a>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <div class="device">
+          <div class="screen">
+            <div class="line w60"></div>
+            <div class="line"></div>
+            <div class="blockbox"></div>
+          </div>
+        </div>
+        <div class="float-icon i1">&#128722;</div>
+        <div class="float-icon i2">&#10084;&#65039;</div>
+        <div class="float-icon i3">&#128218;</div>
+        <div class="float-icon i4">&#127873;</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Curated picks</span>
+          <h2>Popular Products</h2>
+        </div>
+        <a th:href="@{/shop}" href="shop.html" class="btn btn-secondary btn-sm">View all</a>
+      </div>
+
+
+      <div class="product-grid">
+
+        <th:block th:each="product : ${products}">
+          <div th:replace="~{fragments/product-card :: product-card(product=${product})}"></div>
+        </th:block>
+
+      </div>
+    </div>
+  </section>
+
+  <section style="background: var(--color-surface);">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Browse</span>
+          <h2>Shop by Category</h2>
+        </div>
+      </div>
+
+      <div class="category-grid">
+      <a th:each="category : ${categories}"
+         th:href="@{/shop(category=${category.name()})}"
+         class="category-card">
+
+        <div class="icon-circle" th:text="${category.icon}"></div>
+
+        <h4 th:text="${category.displayName}"></h4>
+
+      </a>
+      </div></div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="icon-circle">&#128666;</div>
+          <h4>Free Shipping</h4>
+          <p class="text-muted">On every order over $50, nationwide.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-circle">&#128274;</div>
+          <h4>Secure Payments</h4>
+          <p class="text-muted">Checkout protected end-to-end.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-circle">&#9201;&#65039;</div>
+          <h4>24/7 Support</h4>
+          <p class="text-muted">Real people, ready to help anytime.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-circle">&#128257;</div>
+          <h4>Easy Returns</h4>
+          <p class="text-muted">30-day, no-questions-asked policy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Manage Orders')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Manage Orders</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body class="admin-body">
+<div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='orders')}"></div>
+
+  <div class="admin-main">
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;">Orders</h2>
+          <div class="breadcrumb">Admin / Orders</div>
+        </div>
+        <a href="#" class="btn btn-secondary btn-sm">Export CSV</a>
+      </div>
+
+      <div class="table-wrap">
+
+        <div class="table-toolbar" style="padding: var(--space-5) 18px 0;">
+          <div class="search-box"><span>&#128269;</span><input type="text" id="orderSearch" placeholder="Search by order ID or customer…" /></div>
+          <select class="form-control" style="width:auto;" id="statusFilter">
+            <option value="">All statuses</option>
+            <option value="PROCESSING">Processing</option>
+            <option value="SHIPPED">Shipped</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </div>
+
+        <table class="data-table" style="margin-top: var(--space-4);" id="ordersTable">
+          <thead>
+            <tr><th>Order ID</th><th>User</th><th>Date</th><th>Status</th><th>Total</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr th:each="o : ${orders}" th:attr="data-status=${o.status.name()}">
+              <td th:text="'#EDU-' + ${o.id}">#EDU-1042</td>
+              <td>
+                <div class="cell-user">
+                  <img th:if="${o.user.image}" th:src="${o.user.image}" class="avatar-sm avatar-sm-img" alt="" />
+                  <div th:unless="${o.user.image}" class="avatar-sm"
+                       th:text="${#strings.substring(o.user.userName,0,1).toUpperCase()}">U</div>
+                  <span th:text="${o.user.userName}">Jane Doe</span>
+                </div>
+              </td>
+              <td th:text="${#temporals.format(o.createdAt, 'MMM dd, yyyy')}">Jun 12, 2026</td>
+              <td>
+                <span class="badge badge-success" th:if="${o.status.name() == 'DELIVERED'}">Delivered</span>
+                <span class="badge badge-warning" th:if="${o.status.name() == 'SHIPPED'}">Shipped</span>
+                <span class="badge badge-info" th:if="${o.status.name() == 'PROCESSING'}">Processing</span>
+                <span class="badge badge-danger" th:if="${o.status.name() == 'CANCELLED'}">Cancelled</span>
+              </td>
+              <td th:text="'$' + ${#numbers.formatDecimal(o.totalPrice, 1, 'COMMA', 2, 'POINT')}">$93.00</td>
+              <td>
+                <form th:action="@{/admin/orders/status/{id}(id=${o.id})}" method="post" class="status-change-form" style="display:flex;gap:6px;">
+                  <select name="status" class="form-control" style="width:auto;padding:6px 10px;font-size:0.78rem;" onchange="this.form.submit()">
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == o.status}"></option>
+                  </select>
+                </form>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(orders)}">
+              <td colspan="6" class="text-center text-muted" style="padding:var(--space-6) 0;">No orders yet.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span>Showing <strong th:text="${#lists.size(orders)}">0</strong> orders</span>
+          <div class="pagination">
+            <a href="#">&#8249;</a>
+            <a href="#" class="active">1</a>
+            <a href="#">&#8250;</a>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const rows = document.querySelectorAll('#ordersTable tbody tr[data-status]');
+      const search = document.getElementById('orderSearch');
+      const statusFilter = document.getElementById('statusFilter');
+
+      function applyFilters() {
+        const q = search.value.trim().toLowerCase();
+        const status = statusFilter.value;
+        rows.forEach(row => {
+          const matchesStatus = !status || row.dataset.status === status;
+          const text = row.textContent.toLowerCase();
+          const matchesSearch = !q || text.includes(q);
+          row.style.display = (matchesStatus && matchesSearch) ? '' : 'none';
+        });
+      }
+
+      search.addEventListener('input', applyFilters);
+      statusFilter.addEventListener('change', applyFilters);
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title=${product} != null ? 'Edit Product' : 'Add Product')}">
+  <meta charset="UTF-8" />
+  <title th:text="${product} != null ? 'EduShop · Edit Product' : 'EduShop · Add Product'">EduShop · Add Product</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+
+</head>
+<body class="admin-body">
+<div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='products')}"></div>
+
+  <div class="admin-main">
+
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;" th:text="${product} != null ? 'Edit Product' : 'Add Product'">Add Product</h2>
+          <div class="breadcrumb">
+            <a th:href="@{/admin/products}" href="products.html">Products</a> / <span th:text="${product} != null ? 'Edit Product' : 'Add Product'">Add Product</span>
+          </div>
+        </div>
+        <a th:href="@{/admin/products}" href="products.html" class="btn btn-ghost btn-sm">&#8592; Back to Products</a>
+      </div>
+
+      <div th:replace="~{fragments/alerts :: alert(type='error', title='Could not save product', message='Please check the required fields below.')}"
+           th:if="${productError}"></div>
+
+      <form th:action="${product} != null ? @{/admin/product/edit/{id}(id=${product.id})} : @{/admin/products/new}" action="#" method="post" enctype="multipart/form-data">
+
+        <div class="form-page-layout">
+
+          <div>
+            <div class="panel" style="margin-bottom: var(--space-5);">
+              <div class="form-section-title">Basic Information</div>
+
+              <div class="form-group">
+                <label class="form-label" for="productName">Product name</label>
+                <input class="form-control" type="text" id="productName" name="name" th:value="${product != null} ? ${product.productName} : null" placeholder="e.g. Wireless Headphones" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="productDesc">Description</label>
+                <textarea class="form-control" id="productDesc" name="description" rows="4" placeholder="Short description shown on the product page…" th:text="${product != null} ? ${product.description} : null"></textarea>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="productCategory">Category</label>
+                  <select class="form-control"
+                          id="productCategory"
+                          name="category"
+                          required>
+
+                    <option value="">Select category</option>
+
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat}"
+                            th:text="${cat.icon + ' ' + cat.displayName}"
+                            th:selected="${product != null and product.category == cat}">
+                    </option>
+
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="productSku">SKU</label>
+                  <input class="form-control" type="text" id="productSku" name="sku" placeholder="EDU-XX-0000" />
+                </div>
+              </div>
+            </div>
+
+            <div class="panel" style="margin-bottom: var(--space-5);">
+              <div class="form-section-title">Pricing &amp; Inventory</div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="productPrice">Price ($)</label>
+                  <input class="form-control" type="number" id="productPrice" name="price" step="0.01" min="0" placeholder="0.00" th:value="${product != null} ? ${product.price} : null" required />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="productStock">Stock quantity</label>
+                  <input class="form-control" type="number" id="productStock" name="stock" min="0" placeholder="0" th:value="${product != null} ? ${product.quantity} : null" required />
+                </div>
+                <div class="form-group">
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="form-section-title">Product Images</div>
+              <div class="upload-box">
+                <div class="upload-icon">&#128247;</div>
+                <strong>Drag &amp; drop images here</strong>
+                <span class="hint">PNG, JPG or WEBP, up to 5MB. You can crop it after selecting.</span>
+                <input type="file" id="imageInput" name="image" accept="image/png,image/jpeg,image/webp"
+                       data-cropper data-aspect-ratio="1.3333" data-preview="#productImagePreview">
+              </div>
+              <div class="upload-preview-row">
+                <img id="productImagePreview" class="preview-thumb" alt="Product preview" th:src="${product != null and product.image != null} ? ${product.image} : ''" src="" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-page-actions">
+          <a th:href="@{/admin/products}" href="products.html" class="btn btn-ghost">Cancel</a>
+          <button class="btn btn-primary" type="submit" name="saveAs" value="publish" th:text="${product} != null ? 'Save Changes' : 'Save Product'">Save Product</button>
+        </div>
+      </form>
+
+    </main>
+  </div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script th:src="@{/js/image-cropper.js}" src="../../static/js/image-cropper.js"></script>
+</body>
+</html>

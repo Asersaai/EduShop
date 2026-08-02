@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Product Details')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Product Details</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='shop')}"></div>
+
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <a th:href="@{/templates/public}" href="home.html">Home</a><span class="sep">/</span>
+      <a th:href="@{/shop}" href="shop.html">Shop</a><span class="sep">/</span>
+      <span th:text="${product?.productName} ?: 'xz'"></span>
+    </div>
+  </div>
+
+  <section style="padding-top: var(--space-3);">
+    <div class="container">
+      <div class="pd-grid">
+
+        <div class="pd-gallery">
+          <div class="main-image">
+            <img th:src="${product.image} ?: @{/images/product-placeholder.svg}"
+                 th:alt="${product.productName}">
+          </div>
+          <div class="thumb-row">
+            <div class="thumb-sm active">
+              <img th:src="${product.image} ?: @{/images/product-placeholder.svg}"
+                   th:alt="${product.productName}">
+            </div>
+          </div>
+        </div>
+
+        <div class="pd-info" th:with="liked=${currentUser != null and currentUser.wishlist.contains(product)}">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: var(--space-3);">
+            <div>
+              <span class="category" th:text="${product.category.displayName} ?: 'xz'"></span>
+              <h1 th:text="${product.productName} ?: ' test'">Wireless Headphones</h1>
+            </div>
+            <form th:action="@{/product/details/{id}(id=${product.id})}" method="post">
+              <button class="wishlist-btn"
+                      th:classappend="${liked} ? ' active' : ''"
+                      type="submit"
+                      th:attr="aria-label=${liked} ? 'Remove from wishlist' : 'Add to wishlist'"
+                      th:text="${liked} ? '♥' : '♡'"
+                      aria-label="Wishlist">
+                ♡
+              </button>
+            </form>
+          </div>
+
+          <div class="pd-rating" th:with="rounded=${T(java.lang.Math).round(product.averageRating)}">
+            <span class="stars">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}"
+                        th:text="${i <= rounded} ? '&#9733;' : '&#9734;'">&#9733;</th:block>
+            </span>
+            <span class="text-muted"
+                  th:text="${product.ratingsCount} + ' ' + (${product.ratingsCount == 1} ? 'rating' : 'ratings')">128 reviews</span>
+            <span class="badge badge-success">In stock</span>
+          </div>
+
+          <div class="pd-price">
+            <span class="price" th:text="'$' + (${product.price} ?: '100.00')">$59.00</span>
+          </div>
+
+          <p class="pd-desc" th:text="${product.description} ?: 'coming soon'">
+          </p>
+
+          <div class="pd-options">
+            <div class="form-group">
+              <label class="form-label">Color</label>
+              <select class="form-control">
+                <option>Charcoal Black</option>
+                <option>Slate Blue</option>
+                <option>Sand</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pd-actions">
+            <div class="qty-stepper">
+            </div>
+            <form th:action="@{/cart/add}" method="post">
+              <input type="hidden" name="productId" th:value="${product.id}">
+              <button class="btn btn-secondary" type="submit">
+                Add to Cart
+              </button>
+            </form>
+          </div>
+
+          <div class="pd-meta-list">
+            <div><span>Category</span><span th:text="${product?.category.displayName} ?: 'test'"></span></div>
+            <div><span>Returns</span><span>30-day return policy</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= TABS ================= -->
+      <div class="tab-row">
+        <span class="tab active">Description</span>
+        <span class="tab">Specifications</span>
+        <span class="tab" th:text="'Reviews (' + ${#lists.size(reviews)} + ')'">Reviews (128)</span>
+      </div>
+
+      <div>
+        <p class="text-muted" th:text="${product.description}">
+
+        </p>
+
+        <div class="review-card" th:each="review : ${reviews}">
+          <img th:if="${review.user.image}" th:src="${review.user.image}"
+               class="avatar-sm avatar-sm-img" alt=""/>
+          <div th:unless="${review.user.image}" class="avatar-sm"
+               th:text="${#strings.substring(review.user.userName, 0, 1).toUpperCase()}">J</div>
+          <div>
+            <strong th:text="${review.user.userName}">Jamie M.</strong>
+            <div class="stars" th:if="${review.rating != null}">
+              <th:block th:each="i : ${#numbers.sequence(1,5)}"
+                        th:text="${i <= review.rating} ? '&#9733;' : '&#9734;'">&#9733;</th:block>
+            </div>
+            <p class="text-muted" th:text="${review.comment}">Battery life is exactly as advertised.</p>
+          </div>
+        </div>
+
+        <p class="text-muted" th:if="${#lists.isEmpty(reviews)}">
+          No comments yet &mdash; be the first to leave one.
+        </p>
+
+        <!-- ================= LEAVE A COMMENT ================= -->
+        <div style="max-width: 480px; margin-top: var(--space-5);">
+
+          <form th:if="${currentUser != null}"
+                th:action="@{/product/details/{id}/review(id=${product.id})}"
+                method="post">
+
+            <div class="form-group" th:if="${!userHasRated}">
+              <label class="form-label">Rating</label>
+              <div class="rating">
+                <input value="5" name="rating" id="star5" type="radio" required>
+                <label for="star5"></label>
+                <input value="4" name="rating" id="star4" type="radio" required>
+                <label for="star4"></label>
+                <input value="3" name="rating" id="star3" type="radio" required>
+                <label for="star3"></label>
+                <input value="2" name="rating" id="star2" type="radio" required>
+                <label for="star2"></label>
+                <input value="1" name="rating" id="star1" type="radio" required>
+                <label for="star1"></label>
+              </div>
+            </div>
+
+            <p class="text-muted" th:if="${userHasRated}" style="margin-bottom: var(--space-3);">
+              You've already rated this product &mdash; you can still leave another comment below.
+            </p>
+
+            <div class="form-group">
+              <label class="form-label">Comment</label>
+              <textarea class="form-control" name="comment" rows="3"
+                        placeholder="Write your comment..." required></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-sm" type="submit">Post comment</button>
+          </form>
+
+          <p class="text-muted" th:if="${currentUser == null}">
+            <a th:href="@{/login}">Log in</a> to leave a comment.
+          </p>
+
+        </div>
+      </div>
+
+      <!-- ================= RECOMMENDATIONS ================= -->
+      <div class="section-head" style="margin-top: var(--space-8);">
+        <div>
+          <span class="eyebrow">You may also like</span>
+          <h2>Recommended for you</h2>
+        </div>
+      </div>
+
+      <!--
+        Dynamic version once `recommended` is supplied by the controller:
+        <div class="product-grid">
+          <div th:each="product : ${recommended}"
+               th:replace="~{fragments/product-card :: product-card(product=${product})}"></div>
+        </div>
+      -->
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="thumb">&#128187;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
+          <div class="body">
+            <div class="category">Computers</div>
+            <div class="title">Slim Laptop 14&Prime;</div>
+            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="count">(94)</span></div>
+            <div class="price-row"><span class="price">$899.00</span>
+              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="thumb">&#9000;&#65039;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
+          <div class="body">
+            <div class="category">Wearables</div>
+            <div class="title">Smart Watch SE</div>
+            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;<span class="count">(61)</span></div>
+            <div class="price-row"><span class="price">$129.00</span>
+              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="thumb">&#127825;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
+          <div class="body">
+            <div class="category">Lifestyle</div>
+            <div class="title">Insulated Bottle</div>
+            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;<span class="count">(133)</span></div>
+            <div class="price-row"><span class="price">$19.00</span>
+              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="thumb">&#128221;<button class="wishlist-btn" type="button" aria-label="Wishlist">&#9825;</button></div>
+          <div class="body">
+            <div class="category">Stationery</div>
+            <div class="title">Notebook Set (5pk)</div>
+            <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="count">(40)</span></div>
+            <div class="price-row"><span class="price">$12.00</span>
+              <button class="add-cart-btn" type="button" aria-label="Add to cart">&#43;</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+</body>
+</html>

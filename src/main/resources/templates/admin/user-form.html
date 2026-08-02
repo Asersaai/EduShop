@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title=${editUser} != null ? 'Edit User' : 'Add User')}">
+  <meta charset="UTF-8" />
+  <title th:text="${editUser} != null ? 'EduShop · Edit User' : 'EduShop · Add User'">EduShop · Add User</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body class="admin-body">
+<div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='users')}"></div>
+
+  <div class="admin-main">
+
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;" th:text="${editUser} != null ? 'Edit User' : 'Add User'">Add User</h2>
+          <div class="breadcrumb">
+            <a th:href="@{/admin/users}" href="users.html">Users</a> / <span th:text="${editUser} != null ? 'Edit User' : 'Add User'">Add User</span>
+          </div>
+        </div>
+        <a th:href="@{/admin/users}" href="users.html" class="btn btn-ghost btn-sm">&#8592; Back to Users</a>
+      </div>
+
+      <div th:replace="~{fragments/alerts :: alert(type='error', title='Could not save user', message='Please check the fields below.')}"
+           th:if="${param.error}"></div>
+
+      <form th:action="${editUser} != null ? @{/admin/users/edit/{id}(id=${editUser.id})} : @{/admin/users/new}" action="#" method="post" enctype="multipart/form-data">
+
+        <div class="form-page-layout">
+
+          <div>
+            <div class="panel" style="margin-bottom: var(--space-5);">
+              <div class="form-section-title">Profile Photo</div>
+              <div class="avatar-upload-row">
+                <img id="userAvatarPreview" class="avatar-preview" th:src="${editUser != null and editUser.image != null} ? ${editUser.image} : '/images/avatar-default.svg'" src="/images/avatar-default.svg" alt="Avatar preview" />
+                <div>
+                  <label class="btn btn-ghost btn-sm" for="avatarInput" style="cursor:pointer;">Choose photo</label>
+                  <input type="file" id="avatarInput" name="avatar" accept="image/png,image/jpeg,image/webp"
+                         style="display:none;" data-cropper data-aspect-ratio="1" data-preview="#userAvatarPreview" />
+                  <p class="hint">Optional. Square photo works best — crop it after selecting.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel" style="margin-bottom: var(--space-5);">
+              <div class="form-section-title">Account Information</div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="username">Username</label>
+                  <input class="form-control" type="text" id="username" name="username" th:value="${editUser != null} ? ${editUser.userName} : null" placeholder="name" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="email">Email address</label>
+                  <input class="form-control" type="email" id="email" name="email" th:value="${editUser != null} ? ${editUser.email} : null" placeholder="jane.doe@school.edu" required />
+                </div>
+              </div>
+
+
+            </div>
+
+            <div class="panel" th:unless="${editUser}">
+              <div class="form-section-title">Set Password</div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="password">Password</label>
+                  <input class="form-control" type="password" id="password" name="password" placeholder="••••••••" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="confirmPassword">Confirm password</label>
+                  <input class="form-control" type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required />
+                </div>
+              </div>
+
+              <label class="checkbox-line">
+                <input type="checkbox" name="sendWelcomeEmail" checked /> Send welcome email with login instructions
+              </label>
+            </div>
+          </div>
+
+          </div>
+
+        <div class="form-page-actions">
+          <a th:href="@{/admin/users}" href="users.html" class="btn btn-ghost">Cancel</a>
+          <button class="btn btn-primary" type="submit" th:text="${editUser} != null ? 'Save Changes' : 'Create User'">Create User</button>
+        </div>
+      </form>
+
+    </main>
+  </div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script th:src="@{/js/image-cropper.js}" src="../../static/js/image-cropper.js"></script>
+</body>
+</html>

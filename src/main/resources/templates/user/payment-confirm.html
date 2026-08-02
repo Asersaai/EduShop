@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Payment Confirmed')}">
+  <meta charset="UTF-8" /><title>EduShop · Payment Confirmed</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='')}"></div>
+
+  <section>
+    <div class="container" style="max-width:720px;">
+
+      <div class="panel text-center" style="padding:var(--space-7); margin-bottom:var(--space-5);">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--color-success);color:#fff;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-4);">&#10003;</div>
+        <h2>Payment Successful!</h2>
+        <p class="text-muted" style="max-width:380px;margin:0 auto var(--space-4);">
+          Your order has been placed and is being processed.
+        </p>
+        <div class="badge badge-success" style="font-size:0.95rem; padding:10px 22px;">
+          <span th:if="${order}" th:text="'Order #' + ${order.id} + ' confirmed'">Order confirmed</span>
+          <span th:unless="${order}">Order #EDU-1043 confirmed</span>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:var(--space-5);">
+        <div class="panel-head"><h3>Order Details</h3></div>
+
+        <!-- Real order -->
+        <th:block th:if="${order}">
+          <div class="order-line" th:each="item : ${order.items}">
+            <div class="ol-thumb" th:text="${item.product != null} ? ${item.product.category.icon} : '📦'">&#127911;</div>
+            <div class="ol-info"><strong th:text="${item.productName}">Product</strong><span th:text="'Qty: ' + ${item.quantity}">Qty: 1</span></div>
+            <div class="ol-price" th:text="'$' + ${item.price * item.quantity}">$0.00</div>
+          </div>
+
+          <div style="margin-top:var(--space-5);">
+            <div class="summary-row total"><span>Total paid</span><span th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}">$0.00</span></div>
+          </div>
+        </th:block>
+
+
+        <th:block th:unless="${order}">
+          <div class="order-line">
+            <div class="ol-thumb">&#127911;</div>
+            <div class="ol-info"><strong>Wireless Headphones</strong><span>Qty: 1 · Charcoal Black</span></div>
+            <div class="ol-price">$59.00</div>
+          </div>
+          <div class="order-line">
+            <div class="ol-thumb">&#128218;</div>
+            <div class="ol-info"><strong>Calculus Study Set</strong><span>Qty: 2 · Paperback</span></div>
+            <div class="ol-price">$68.00</div>
+          </div>
+          <div class="order-line">
+            <div class="ol-thumb">&#127919;</div>
+            <div class="ol-info"><strong>Campus Backpack</strong><span>Qty: 1 · Navy</span></div>
+            <div class="ol-price">$15.00</div>
+          </div>
+
+          <div style="margin-top:var(--space-5);">
+            <div class="summary-row"><span>Subtotal</span><span>$142.00</span></div>
+            <div class="summary-row"><span>Shipping</span><span>Free</span></div>
+            <div class="summary-row"><span>Tax (6%)</span><span>$8.52</span></div>
+            <div class="summary-row total"><span>Total paid</span><span>$150.52</span></div>
+          </div>
+        </th:block>
+      </div>
+
+      <div class="form-grid-2" style="margin-bottom:var(--space-5);">
+        <div class="panel">
+          <h4 style="margin-bottom:var(--space-3);">Shipping to</h4>
+          <p style="margin:0; font-size:0.88rem; white-space:pre-line;"
+             th:if="${order}" th:text="${order.shippingAddress}">Address</p>
+          <p style="margin:0; font-size:0.88rem;" th:unless="${order}">Jane Doe<br/>221B University Ave<br/>Cambridge, MA 02138<br/>United States</p>
+        </div>
+        <div class="panel">
+          <h4 style="margin-bottom:var(--space-3);">Payment method</h4>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:1.6rem;">&#128176;</div>
+            <div style="font-size:0.88rem;">
+              <strong>EduShop balance</strong><br/>
+              <span class="text-muted" th:if="${order}" th:text="'Charged $' + ${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}">Charged</span>
+              <span class="text-muted" th:unless="${order}">Charged $150.52</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div style="display:flex;gap:var(--space-3);justify-content:center;">
+        <a th:href="@{/account/orders}" href="order-history.html" class="btn btn-secondary">View My Orders</a>
+        <a th:href="@{/shop}" href="shop.html" class="btn btn-primary">Continue Shopping</a>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

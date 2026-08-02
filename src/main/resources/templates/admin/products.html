@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Manage Products')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Manage Products</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body class="admin-body">
+<div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='products')}"></div>
+
+  <div class="admin-main">
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;">Products</h2>
+          <div class="breadcrumb">Admin / Products</div>
+        </div>
+        <a th:href="@{/admin/products/new}"  class="btn btn-primary btn-sm">&#43; Add Product</a>
+      </div>
+
+      <div th:replace="~{fragments/alerts :: alert(type='success', title='Product saved', message='The product was added to your catalog.')}"
+           th:if="${productSaved}"></div>
+
+      <div class="table-wrap">
+
+        <div class="table-toolbar" style="padding: var(--space-5) 18px 0;">
+          <form th:action="@{/admin/products}" method="get">
+          <div class="search-box"><span>&#128269;</span><input name="search"
+                                                               type="text"
+                                                               placeholder="Search products…"
+                                                               th:value="${search}" />
+          </div></form>
+        </div>
+
+
+
+        <table class="data-table" style="margin-top: var(--space-4);">
+          <thead>
+            <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+          <tr th:each="p : ${products.content}">
+            <td>
+              <div class="cell-product">
+                <div class="mini-thumb">🎧</div>
+                <div>
+                  <strong th:text="${p.productName}"></strong>
+                </div>
+              </div>
+            </td>
+
+            <td th:text="${p.category != null ? p.category.displayName : 'No category'}"></td>
+
+            <td th:text="${'$' + p.price}"></td>
+
+            <td th:text="${p.quantity}"></td>
+
+            <td>
+        <span class="badge badge-success"
+              th:if="${p.quantity > 10}">
+            In stock
+        </span>
+
+              <span class="badge badge-warning"
+                    th:if="${p.quantity > 0 and p.quantity <= 10}">
+            Low stock
+        </span>
+
+              <span class="badge badge-danger"
+                    th:if="${p.quantity == 0}">
+            Out of stock
+        </span>
+            </td>
+
+            <td>
+              <div class="table-actions">
+                <a th:href="@{/admin/product/edit/{id}(id=${p.id})}" class="btn-icon" aria-label="Edit">&#9998;</a>
+                <form th:action="@{/admin/product/delete/{id}(id=${p.id})}" method="post">
+                  <button class="btn-icon danger" aria-label="Delete">&#128465;</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span class="result-count" th:if="${products.totalElements > 0}">
+    Showing
+    <span th:text="${products.number * products.size + 1}"></span>
+    -
+    <span th:text="${products.number * products.size + products.numberOfElements}"></span>
+    of
+    <span th:text="${products.totalElements}"></span>
+    results
+</span>
+
+          <span class="result-count" th:unless="${products.totalElements > 0}">
+    No products found
+</span>
+          <div class="pagination">
+            <a th:if="${products.hasPrevious()}" th:href="@{/admin/products(page=${products.number - 1})}"> ‹ </a>
+            <th:block th:if="${products.totalPages > 0}">
+              <a th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}" th:href="@{/admin/products(page=${i})}" th:text="${i + 1}" th:classappend="${i == products.number} ? 'active'"> </a>
+            </th:block> <a th:if="${products.hasNext()}" th:href="@{/admin/products(page=${products.number + 1})}"> › </a>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

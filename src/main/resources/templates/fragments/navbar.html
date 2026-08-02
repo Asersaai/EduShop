@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <header class="navbar" th:fragment="navbar(active)">
+    <div class="container">
+      <a th:href="@{/}" href="../public/home.html" class="brand">
+        <span class="brand-mark">E</span>
+        <span>EduShop</span>
+      </a>
+
+      <nav class="nav-links">
+        <a th:href="@{/}" href="../public/home.html" th:classappend="${active == 'home'} ? 'active'">Home</a>
+        <a th:href="@{/shop}" href="../public/shop.html" th:classappend="${active == 'shop'} ? 'active'">Products</a>
+      </nav>
+      <form th:action="@{/shop}" method="get" class="navbar-search">
+
+        <div class="container1">
+          <input type="search"
+                 name="search"
+                 class="input1"
+                 placeholder="Search products..."
+                 th:value="${search}"
+                 required>
+
+          <div class="icon1">
+            <svg viewBox="0 0 512 512">
+              <title>Search</title>
+              <path d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-miterlimit="10"
+                    stroke-width="32"/>
+              <path fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    stroke-width="32"
+                    d="M338.29 338.29L448 448"/>
+            </svg>
+          </div>
+        </div>
+      </form>
+
+      <div class="nav-actions">
+
+        <a th:if="${currentUser == null}"
+           th:href="@{/login}"
+           class="btn btn-primary btn-sm">
+          Sign up
+        </a>
+        <div th:if="${currentUser != null}" class="balance-pill" title="Баланс счёта">
+          <span class="balance-pill__icon">&#128176;</span>
+          <span class="balance-pill__amount"
+                th:text="'$' + ${#numbers.formatDecimal(currentUser.balance, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+        </div>
+
+        <a th:if="${currentUser != null}"
+           th:href="@{/account/topup}"
+           class="btn btn-primary btn-sm balance-topup-btn">
+          + Пополнить
+        </a>
+
+        <div th:if="${currentUser != null}" class="profile-dropdown">
+
+          <button class="profile-dropdown__trigger">
+
+            <img
+                    th:src="${currentUser.image} ?: @{/images/avatar-default.svg}"
+                    src="https://avatars.mds.yandex.net/i?id=a488a893bf7fa0172cd8187814ee5e3d5010dff3-5291412-images-thumbs&n=13"
+                    alt="Avatar"
+                    class="profile-dropdown__avatar">
+
+            <span
+                    class="profile-dropdown__name"
+                    th:text="${currentUser.userName}">
+            User
+        </span>
+
+          </button>
+
+          <div class="profile-dropdown__menu">
+
+            <div class="profile-dropdown__header">
+              <strong th:text="${currentUser.userName}">
+                Alisher
+              </strong>
+
+              <small th:text="${currentUser.email}">
+                example@mail.com
+              </small>
+            </div>
+
+            <div class="profile-dropdown__separator"></div>
+
+            <a th:href="@{/account/profile}" class="profile-dropdown__item">
+              <span>👤</span>
+              <span>Profile</span>
+            </a>
+
+            <a th:href="@{/cart}" class="profile-dropdown__item">
+              <span>🛒</span>
+              <span>Cart</span>
+            </a>
+
+            <a th:href="@{/wishlist}" class="profile-dropdown__item">
+              <span>❤️</span>
+              <span>wishlist</span>
+            </a>
+
+            <a th:href="@{/account/topup}" class="profile-dropdown__item">
+              <span>💰</span>
+              <span>Пополнить счёт</span>
+            </a>
+
+            <a th:href="@{/settings}" class="profile-dropdown__item">
+              <span>⚙️</span>
+              <span>Settings</span>
+            </a>
+
+            <a th:if="${currentUser.role.name() == 'ADMIN'}"  th:href="@{/admin}" class="profile-dropdown__item">
+            <span>👤</span>
+            <span>Admin</span>
+            </a>
+
+
+            <div class="profile-dropdown__separator"></div>
+
+            <a th:href="@{/logout}"
+               class="profile-dropdown__item profile-dropdown__item--logout">
+              <span>🚪</span>
+              <span>Logout</span>
+            </a>
+
+          </div>
+
+        </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </header>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="product-card" th:fragment="product-card(product)"
+     th:with="liked=${currentUser != null and currentUser.wishlist.contains(product)}">
+  <a th:href="@{/product/details/{id}(id=${product.id})}">
+  <div class="thumb">
+    <img th:src="${product.image} ?: @{/images/product-placeholder.svg}"
+         th:alt="${product.productName}">
+
+    <form th:action="@{/product/details/{id}(id=${product.id})}"
+          method="post"
+          class="wishlist-form"
+          onclick="event.stopPropagation()">
+      <button class="wishlist-btn"
+              th:classappend="${liked} ? ' active' : ''"
+              type="submit"
+              th:attr="aria-label=${liked} ? 'Remove from wishlist' : 'Add to wishlist'"
+              th:text="${liked} ? '♥' : '♡'"
+              aria-label="Wishlist">
+        ♡
+      </button>
+    </form>
+
+  </div>
+
+  <div class="body">
+
+    <div class="category"
+         th:text="${product.category != null ? product.category.displayName : 'No category'}">
+      Electronics
+    </div>
+
+    <div class="title"
+         th:text="${product.productName}">
+      Wireless Headphones
+    </div>
+
+    <div class="stars" th:with="rounded=${T(java.lang.Math).round(product.averageRating)}">
+      <th:block th:each="i : ${#numbers.sequence(1,5)}"
+                th:text="${i <= rounded} ? '★' : '☆'">★</th:block>
+
+      <span class="count"
+            th:text="'(' + ${product.ratingsCount} + ')'">
+                (128)
+            </span>
+    </div>
+
+    <div class="price-row">
+
+      <div>
+                <span class="price"
+                      th:text="'$' + ${product.price}">
+                    $59.00
+                </span>
+      </div>
+
+      <form th:action="@{/cart/add}" method="post">
+        <input type="hidden"
+               name="productId"
+               th:value="${product.id}">
+
+        <button class="add-cart-btn"
+                type="submit"
+                aria-label="Add to cart">
+          &#43;
+        </button>
+      </form>
+
+    </div>
+
+  </div>
+  </a>
+</div>
+
+
+</body>
+</html>

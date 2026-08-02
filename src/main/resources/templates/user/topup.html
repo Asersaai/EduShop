@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Top Up Balance')}">
+  <meta charset="UTF-8" /><title>EduShop · Top Up Balance</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='')}"></div>
+
+  <section style="padding-top:var(--space-4);">
+    <div class="container" style="max-width:720px;">
+
+      <div th:if="${param.success}" th:replace="~{fragments/alerts :: alert(type='success', title='Готово', message='Счёт успешно пополнен.')}"></div>
+      <div th:if="${param.error}" th:with="errMsg=${param.error[0]}">
+        <div th:replace="~{fragments/alerts :: alert(type='error', title='Ошибка', message=${errMsg})}"></div>
+      </div>
+
+      <div class="panel" style="margin-bottom:var(--space-5); text-align:center;">
+        <div class="panel-head" style="justify-content:center;"><h3>Пополнение счёта</h3></div>
+        <p class="text-muted" style="margin:0 0 var(--space-3);">Текущий баланс</p>
+        <div style="font-size:2.2rem; font-weight:700; color:var(--color-primary);">
+          $<span th:text="${#numbers.formatDecimal(user.balance, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+        </div>
+      </div>
+
+      <div class="payment-layout">
+
+        <div style="grid-column: 1 / -1; max-width:520px; margin:0 auto; width:100%;">
+          <div class="panel">
+            <div class="panel-head"><h3>Код пополнения</h3></div>
+
+            <div class="card-visual">
+              <div class="card-chip">&#127873;</div>
+              <div class="card-num" id="codeVisual">•••• •••• •••• ••••</div>
+              <div class="card-meta">
+                <div>
+                  <div>Тип</div>
+                  <strong>Промо-код</strong>
+                </div>
+                <div>
+                  <div>Формат</div>
+                  <strong>16 цифр</strong>
+                </div>
+              </div>
+            </div>
+
+            <form th:action="@{/account/topup}" action="#" method="post">
+              <div class="form-group">
+                <label class="form-label" for="code">Введите код пополнения</label>
+                <input class="form-control" type="text" id="code" name="code"
+                       inputmode="numeric" placeholder="0000 0000 0000 0000"
+                       maxlength="19" required
+                       style="letter-spacing:2px; font-family: var(--font-heading);" />
+                <p class="hint">Код состоит из 16 цифр — введите его без пробелов, они добавятся автоматически.</p>
+              </div>
+
+              <div style="margin-top:var(--space-5); display:flex; gap:var(--space-3);">
+                <a th:href="@{/account/profile}" class="btn btn-ghost">&#8592; Назад</a>
+                <button class="btn btn-primary" type="submit" style="flex:1;">Активировать код &rsaquo;</button>
+              </div>
+
+              <div class="trust-row" style="justify-content:center;">
+                <span>&#128274;</span>
+                <span>Каждый код можно использовать один раз</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+  <script>
+    (function () {
+      const codeInput = document.getElementById('code');
+      const codeVisual = document.getElementById('codeVisual');
+
+      codeInput.addEventListener('input', () => {
+        let digits = codeInput.value.replace(/\D/g, '').slice(0, 16);
+        codeInput.value = digits.replace(/(.{4})/g, '$1 ').trim();
+        codeVisual.textContent = digits.length
+          ? codeInput.value.padEnd(19, '•').slice(0, 19)
+          : '•••• •••• •••• ••••';
+      });
+    })();
+  </script>
+</body>
+</html>

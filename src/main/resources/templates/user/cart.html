@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='My Cart')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · My Cart</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='cart')}"></div>
+
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <a th:href="@{/static}" href="../public/home.html">Home</a><span class="sep">/</span><span>Cart</span>
+    </div>
+  </div>
+
+  <section style="padding-top: var(--space-4);">
+    <div class="container">
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Checkout</span>
+          <h2>Your Cart</h2>
+        </div>
+      </div>
+       <div class="table-wrap">
+
+          <table class="data-table">
+            <thead>
+              <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr th:each="item: ${items}">
+                <td>
+                  <div class="cart-item-product">
+                    <div class="thumb-cart" th:text="${item.product.category.icon}">&#128218;</div>
+                    <div>
+                      <strong th:text="${item.product.productName}">Calculus Study Set</strong>
+                    </div>
+                  </div>
+                </td>
+                <td th:text="'$' + ${item.product.price}">$34.00</td>
+                <td>
+                  <form th:action="@{/cart/quantity}" action="#" method="post">
+                    <div class="qty-stepper">
+                      <input type="hidden" name="productId" th:value="${item.id}">
+                      <button type="submit" name="action" value="decrease" aria-label="Decrease quantity">&minus;</button>
+                      <span class="qty-val" th:text="${item.quantity}">1</span>
+                      <button type="submit" name="action" value="increase" aria-label="Increase quantity">&#43;</button>
+                    </div>
+                  </form>
+                </td>
+                <td>
+                  <strong th:text="'$' + ${item.product.price * item.quantity}">
+                    $0
+                  </strong>
+                </td>
+              </td>
+                <td>
+                  <form th:action="@{/cart/remove}" action="#" method="post">
+                    <input name="productId" th:value="${item.id}" type="hidden">
+                    <button class="remove-link" type="submit">Remove</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-footer">
+            <a th:href="@{/shop}" href="../public/shop.html" class="form-link">&#8592; Continue shopping</a>
+            <span th:text="${items.size()} + ' items in cart'">1 item in cart</span>
+          </div>
+        </div>
+
+        <!-- ================= ORDER SUMMARY ================= -->
+        <aside class="panel summary-card">
+          <div class="panel-head"><h3>Order Summary</h3></div>
+
+
+
+          <div class="summary-row total" ><span>Total </span><span th:text="'$'+${total}">0.52</span></div>
+
+          <a th:href="@{/checkout/address}" class="btn btn-primary btn-block" style="margin-top: var(--space-4);">Proceed to Checkout</a>
+
+          <div class="trust-row">
+            <span>&#128274;</span>
+            <span>Secure checkout &middot; 30-day returns</span>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+  </section>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+</body>
+</html>

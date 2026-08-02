@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <aside class="admin-sidebar" th:fragment="sidebar(active)">
+    <a th:href="@{/admin}" href="../../admin/dashboard.html" class="brand">
+      <span class="brand-mark">E</span>
+      <span class="brand-text">EduShop</span>
+    </a>
+
+    <div class="sidebar-nav">
+      <div class="sidebar-section-label">Main</div>
+      <a th:href="@{/admin}" href="../../admin/dashboard.html" th:classappend="${active == 'dashboard'} ? 'active'">
+        <span class="nav-ic">&#9635;</span><span class="nav-label">Dashboard</span>
+      </a>
+      <a th:href="@{/admin/products}" href="../../admin/products.html" th:classappend="${active == 'products'} ? 'active'">
+        <span class="nav-ic">&#128230;</span><span class="nav-label">Products</span>
+      </a>
+      <a th:href="@{/admin/orders}" href="../../admin/orders.html" th:classappend="${active == 'orders'} ? 'active'">
+        <span class="nav-ic">&#128722;</span><span class="nav-label">Orders</span>
+      </a>
+      <a th:href="@{/admin/users}" href="../../admin/users.html" th:classappend="${active == 'users'} ? 'active'">
+        <span class="nav-ic">&#128101;</span><span class="nav-label">Users</span>
+      </a>
+      <a th:href="@{/admin/categories}" href="../../admin/categories.html" th:classappend="${active == 'categories'} ? 'active'">
+        <span class="nav-ic">&#128193;</span><span class="nav-label">Categories</span>
+      </a>
+    </div>
+
+    <div class="sidebar-foot">
+      Signed in as <strong>Admin</strong>
+    </div>
+  </aside>
+
+</body>
+</html>

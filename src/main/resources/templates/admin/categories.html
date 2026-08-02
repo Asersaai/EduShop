@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Manage Categories')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · Manage Categories</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body class="admin-body">
+<div th:replace="~{fragments/navbar-admin :: navbar(active='admin')}"></div>
+
+  <div th:replace="~{fragments/sidebar :: sidebar(active='categories')}"></div>
+
+  <div class="admin-main">
+
+
+
+    <main class="admin-content">
+
+      <div class="admin-page-head">
+        <div>
+          <h2 style="margin-bottom:0;">Categories</h2>
+          <div class="breadcrumb">Admin / Categories</div>
+        </div>
+      </div>
+
+
+        <div th:each="c : ${categories}" class="cat-manage-card">
+        <div class="cat-manage-card">
+          <div class="icon-circle" th:text="${c.icon}"></div>
+          <div class="info"><strong th:text="${c.displayName}"></strong></div>
+        </div>
+        </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

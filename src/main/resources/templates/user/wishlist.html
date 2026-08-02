@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='My Wishlist')}">
+  <meta charset="UTF-8" />
+  <title>EduShop · My Wishlist</title>
+  <link rel="stylesheet" href="../../static/css/style.css" />
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar(active='wishlist')}"></div>
+
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <a th:href="@{/}" href="../public/home.html">Home</a><span class="sep">/</span><span>Wishlist</span>
+    </div>
+  </div>
+
+  <section style="padding-top: var(--space-4);">
+    <div class="container">
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Saved for later</span>
+          <h2>Your Wishlist</h2>
+        </div>
+      </div>
+
+
+      <div th:if="${items != null and !items.isEmpty()}" class="table-wrap">
+
+        <table class="data-table">
+          <thead>
+            <tr><th>Product</th><th>Price</th><th>Status</th><th></th><th></th></tr>
+          </thead>
+          <tbody id="wishlist-tbody">
+            <tr th:each="product : ${items}" class="wishlist-row">
+              <td>
+                <div class="cart-item-product">
+                  <a th:href="@{/product/details/{id}(id=${product.id})}" class="thumb-cart" style="overflow:hidden; padding:0;">
+                    <img th:src="${product.image}" alt=""
+                         style="width:100%; height:100%; object-fit:cover; border-radius:inherit;" />
+                  </a>
+                  <div>
+                    <strong th:text="${product.productName}">Calculus Study Set</strong>
+                    <div class="category" th:text="${product.category != null ? product.category.displayName : ''}">
+                      Books &amp; Courses
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td th:text="'$' + ${product.price}">$570</td>
+
+              <td>
+                <span th:if="${product.quantity > 0}" class="badge badge-success">In stock</span>
+                <span th:unless="${product.quantity > 0}" class="badge badge-muted">Out of stock</span>
+              </td>
+
+              <td>
+                <form th:action="@{/cart/add}" action="#" method="post">
+                  <input type="hidden" name="productId" th:value="${product.id}">
+                  <button class="btn btn-secondary btn-sm" type="submit" th:disabled="${product.quantity <= 0}">
+                    Add to cart
+                  </button>
+                </form>
+              </td>
+
+              <td>
+                <form th:action="@{/wishlist/remove}" action="#" method="post">
+                  <input name="productId" th:value="${product.id}" type="hidden">
+                  <button class="remove-link" type="submit" aria-label="Remove from wishlist">&#10005;</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <a th:href="@{/shop}" href="../public/shop.html" class="form-link">&#8592; Continue shopping</a>
+          <span th:text="${items.size()} + ' items saved'">1 item saved</span>
+        </div>
+
+        <div class="table-footer" style="justify-content:center; border-top:none;">
+          <div id="wishlist-pagination" class="pagination"></div>
+        </div>
+      </div>
+
+      <div th:if="${items == null or items.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#9825;</div>
+        <h3>Your wishlist is empty</h3>
+        <p>Save products you like by tapping the heart icon — they'll show up here.</p>
+        <a th:href="@{/shop}" href="../public/shop.html" class="btn btn-primary">Browse products</a>
+      </div>
+
+    </div>
+  </section>$
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+
+  <script th:inline="javascript">
+    (function () {
+      var PAGE_SIZE = 10;
+      var rows = Array.prototype.slice.call(document.querySelectorAll('#wishlist-tbody .wishlist-row'));
+      var pager = document.getElementById('wishlist-pagination');
+      if (!rows.length || !pager) return;
+
+      var totalPages = Math.ceil(rows.length / PAGE_SIZE);
+      var currentPage = 1;
+
+      function showPage(page) {
+        currentPage = page;
+        rows.forEach(function (row, i) {
+          var pageOfRow = Math.floor(i / PAGE_SIZE) + 1;
+          row.style.display = (pageOfRow === page) ? '' : 'none';
+        });
+        renderPager();
+      }
+
+      function renderPager() {
+        pager.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        var prev = document.createElement('a');
+        prev.href = '#';
+        prev.textContent = '‹';
+        if (currentPage === 1) prev.classList.add('disabled');
+        prev.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (currentPage > 1) showPage(currentPage - 1);
+        });
+        pager.appendChild(prev);
+
+        for (var i = 1; i <= totalPages; i++) {
+          (function (pageNum) {
+            var a = document.createElement('a');
+            a.href = '#';
+            a.textContent = pageNum;
+            if (pageNum === currentPage) a.classList.add('active');
+            a.addEventListener('click', function (e) {
+              e.preventDefault();
+              showPage(pageNum);
+            });
+            pager.appendChild(a);
+          })(i);
+        }
+
+        var next = document.createElement('a');
+        next.href = '#';
+        next.textContent = '›';
+        if (currentPage === totalPages) next.classList.add('disabled');
+        next.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (currentPage < totalPages) showPage(currentPage + 1);
+        });
+        pager.appendChild(next);
+      }
+
+      showPage(1);
+    })();
+  </script>
+
+</body>
+</html>
